@@ -2,116 +2,122 @@
   <v-app dark>
     <v-navigation-drawer
       v-model="drawer"
-      :mini-variant="miniVariant"
-      :clipped="clipped"
-      fixed
-      app
-    >
-      <v-list>
-        <v-list-item
-          v-for="(item, i) in items"
-          :key="i"
-          :to="item.to"
-          router
-          exact
+      app mobile-breakpoint="650"> <!--Скрываем сайдбар при 650 пикселях и меньше-->
+      <v-list dense>
+        <v-subheader>Users</v-subheader>
+        <v-list-item-group
+          v-model="selectedItem"
+          color="primary"
         >
-          <v-list-item-action>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title v-text="item.title" />
-          </v-list-item-content>
-        </v-list-item>
+          <v-list-item
+            v-for="user in users"
+            :key="user.id">
+            <v-list-item-avatar>
+              <v-img
+                :alt="`${user.name} avatar`"
+                :src="require('../assets/avatar_1.png')"
+              ></v-img>
+            </v-list-item-avatar>
+
+            <v-list-item-content>
+              <v-list-item-title v-text="user.name"></v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-icon>
+              <v-icon :color="user.id === selectedItem+1 ? 'primary' : 'grey'">
+                <!-- selectedIndex+1 из-за id-->
+                mdi-message-outline
+              </v-icon>
+            </v-list-item-icon>
+          </v-list-item>
+        </v-list-item-group>
       </v-list>
+
+
     </v-navigation-drawer>
-    <v-app-bar
-      :clipped-left="clipped"
-      fixed
-      app
-    >
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-btn
-        icon
-        @click.stop="miniVariant = !miniVariant"
-      >
-        <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        @click.stop="clipped = !clipped"
-      >
-        <v-icon>mdi-application</v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        @click.stop="fixed = !fixed"
-      >
-        <v-icon>mdi-minus</v-icon>
-      </v-btn>
-      <v-toolbar-title v-text="title" />
-      <v-spacer />
-      <v-btn
-        icon
-        @click.stop="rightDrawer = !rightDrawer"
-      >
-        <v-icon>mdi-menu</v-icon>
-      </v-btn>
+    <v-app-bar fixed app>
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer"/>
+      <v-toolbar-title v-text="getName" :class="{moved: drawer}"/>
+      <v-spacer/>
+      <v-tooltip left>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn icon dark
+                 v-bind="attrs" @click="exit"
+                 v-on="on">
+            <v-icon>mdi-arrow-right-bold-circle-outline</v-icon>
+          </v-btn>
+        </template>
+        <span>Leave room</span>
+      </v-tooltip>
     </v-app-bar>
-    <v-content>
-      <v-container>
-        <nuxt />
-      </v-container>
+    <v-content :class="{moved: drawer}">
+      <div style="height: 100%">
+        <nuxt/>
+      </div>
     </v-content>
-    <v-navigation-drawer
-      v-model="rightDrawer"
-      :right="right"
-      temporary
-      fixed
-    >
-      <v-list>
-        <v-list-item @click.native="right = !right">
-          <v-list-item-action>
-            <v-icon light>
-              mdi-repeat
-            </v-icon>
-          </v-list-item-action>
-          <v-list-item-title>Switch drawer (click me)</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-    <v-footer
-      :fixed="fixed"
-      app
-    >
-      <span>&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer>
   </v-app>
 </template>
 
 <script>
+import {mapState, mapMutations} from "vuex";
+
 export default {
-  data () {
+  computed: {
+    getName() {
+      return 'Room id: ' + this.user.room + ', chat page of ' + this.user.name
+    },
+    ...mapState(["user"])
+  },
+  data() {
     return {
-      clipped: false,
-      drawer: false,
-      fixed: false,
-      items: [
+      users: [
         {
-          icon: 'mdi-apps',
-          title: 'Welcome',
-          to: '/'
+          id: 1,
+          name: 'Jason Oner',
         },
         {
-          icon: 'mdi-chart-bubble',
-          title: 'Inspire',
-          to: '/inspire'
-        }
+          id: 2,
+          name: 'Mike Carlson',
+        },
+        {
+          id: 3,
+          name: 'Cindy Baker',
+        },
+        {
+          id: 4,
+          name: 'Ali Connors',
+        },
+        {
+          id: 5,
+          name: 'Mr Perdusha',
+        },
       ],
-      miniVariant: false,
+      drawer: false,
       right: true,
-      rightDrawer: false,
-      title: 'Vuetify.js'
+      selectedItem: -1,
+      items: [
+        {text: 'Real-Time', icon: 'mdi-clock'},
+        {text: 'Audience', icon: 'mdi-account'},
+        {text: 'Conversions', icon: 'mdi-flag'},
+      ],
+    }
+  },
+  methods: {
+    ...mapMutations(['clearUser']),
+    exit() {
+      this.clearUser();
+      this.$router.push("/?message=leftChat")
     }
   }
 }
 </script>
+
+<style scoped>
+.moved{
+  padding-left: 250px !important;
+}
+@media screen and (max-width: 760px) {
+  .moved{
+    padding-left: 0px !important;
+  }
+}
+</style>

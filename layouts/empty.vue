@@ -1,8 +1,8 @@
 <template>
-  <v-app>
+  <v-app app dark>
     <v-content>
-      <v-container fluid>
-        <nuxt></nuxt>
+      <v-container fluid class="move">
+          <nuxt></nuxt>
       </v-container>
     </v-content>
   </v-app>
@@ -15,5 +15,7 @@ name: "empty"
 </script>
 
 <style scoped>
-
+.move {
+  padding-top: 20vh !important;
+}
 </style>
