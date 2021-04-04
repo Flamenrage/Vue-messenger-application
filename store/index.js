@@ -1,6 +1,7 @@
 export const state = () => ({
-  user: {}, //объекты со своими полями
-  messages: [] //просто массив сообщений
+  user: {}, //объект со своими полями
+  messages: [], //просто массив сообщений
+  users: []
 })
 
 export const mutations = {
@@ -10,8 +11,12 @@ export const mutations = {
   clearUser(state){
     state.user = {}
     state.messages = []
+    state.users = []
   },
   SOCKET_newMessage(state, message) {
     state.messages.push(message)
-  }
+  },
+  SOCKET_updateUsers(state, users){
+    state.users = users
+  },
 }

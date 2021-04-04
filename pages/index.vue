@@ -7,6 +7,19 @@
       xs12
       sm8>
       <v-card min-width="400">
+        <v-snackbar v-model="snackbar" :timeout="6000" top>
+          {{ message }}
+          <template v-slot:action="{ attrs }">
+            <v-btn
+              color="pink"
+              text
+              v-bind="attrs"
+              @click="snackbar = false"
+            >
+              Close
+            </v-btn>
+          </template>
+        </v-snackbar>
         <v-form ref="form" v-model="valid" lazy-validation>
           <v-card-title class="justify-center">Vue chat application</v-card-title>
           <v-card-text>
@@ -67,8 +80,20 @@ export default {
     roomRules: [
       v => !!v || 'room Id is required'
     ],
+    message: "",
+    snackbar: false
   }),
+  mounted(){
+    const {message} = this.$route.query
+    if (message === 'noUser') {
+      this.message = 'Pls sign in for chating'
+    }
+    else if (message === 'leftChat'){
+      this.message = 'You have left the chat'
+    }
 
+    this.snackbar = !!this.message
+  },
   methods: {
     ...mapMutations(["setUser"]),
     submit() {

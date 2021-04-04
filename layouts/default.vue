@@ -6,24 +6,23 @@
       <v-list dense>
         <v-subheader>Users</v-subheader>
         <v-list-item-group
-          v-model="selectedItem"
           color="primary"
         >
           <v-list-item
-            v-for="user in users"
-            :key="user.id">
+            v-for="u in users"
+            :key="u.id">
             <v-list-item-avatar>
               <v-img
-                :alt="`${user.name} avatar`"
+                :alt="`${u.name} avatar`"
                 :src="require('../assets/avatar_1.png')"
               ></v-img>
             </v-list-item-avatar>
 
             <v-list-item-content>
-              <v-list-item-title v-text="user.name"></v-list-item-title>
+              <v-list-item-title v-text="u.name"></v-list-item-title>
             </v-list-item-content>
             <v-list-item-icon>
-              <v-icon :color="user.id === selectedItem+1 ? 'primary' : 'grey'">
+              <v-icon :color="u.id === user.id ? 'primary' : 'grey'">
                 <!-- selectedIndex+1 из-за id-->
                 mdi-message-outline
               </v-icon>
@@ -31,12 +30,10 @@
           </v-list-item>
         </v-list-item-group>
       </v-list>
-
-
     </v-navigation-drawer>
     <v-app-bar fixed app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"/>
-      <v-toolbar-title v-text="getName" :class="{moved: drawer}"/>
+      <v-toolbar-title v-text="getName" />
       <v-spacer/>
       <v-tooltip left>
         <template v-slot:activator="{ on, attrs }">
@@ -65,47 +62,21 @@ export default {
     getName() {
       return 'Room id: ' + this.user.room + ', chat page of ' + this.user.name
     },
-    ...mapState(["user"])
+    ...mapState(["user", "users"])
   },
   data() {
     return {
-      users: [
-        {
-          id: 1,
-          name: 'Jason Oner',
-        },
-        {
-          id: 2,
-          name: 'Mike Carlson',
-        },
-        {
-          id: 3,
-          name: 'Cindy Baker',
-        },
-        {
-          id: 4,
-          name: 'Ali Connors',
-        },
-        {
-          id: 5,
-          name: 'Mr Perdusha',
-        },
-      ],
       drawer: false,
-      right: true,
-      selectedItem: -1,
-      items: [
-        {text: 'Real-Time', icon: 'mdi-clock'},
-        {text: 'Audience', icon: 'mdi-account'},
-        {text: 'Conversions', icon: 'mdi-flag'},
-      ],
+      right: true
     }
   },
   methods: {
     ...mapMutations(['clearUser']),
     exit() {
+      this.$socket.emit('userLeft', this.user.id, ()=>{ //cb функция - что происходит после срабатывания сокета
       this.clearUser();
       this.$router.push("/?message=leftChat")
+      })
     }
   }
 }

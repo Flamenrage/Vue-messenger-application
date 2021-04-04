@@ -1,7 +1,7 @@
 <template>
   <div class="c-wrap">
     <div class="c-chat">
-      <message v-for="m in messages" :key="m.text" :name="m.name" :text="m.text" owner>
+      <message v-for="m in messages" :key="m.text" :name="m.name" :text="m.text" :owner="m.id === user.id">
       </message>
     </div>
     <div class="c-form">
@@ -28,18 +28,6 @@ export default {
   },
   data: () => ({}),
   computed: mapState(["user", "messages"]),
-  methods: {
-    submit() {
-      // if (this.$refs.form.validate()) {
-      //   const user = {
-      //     name: this.name,
-      //     room: this.room
-      //   }
-      //   this.setUser(user);
-      //   this.$router.push('/chat')
-      // }
-    },
-  }
 }
 </script>
 
